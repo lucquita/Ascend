@@ -1,0 +1,30 @@
+name: ascend_admin
+description: Ascend — panel de administración (Flutter Web).
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.0
+  flutter: ">=3.44.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  ascend_core: ^0.1.0
+  ascend_domain: ^0.1.0
+  ascend_data: ^0.1.0
+  ascend_ui: ^0.1.0
+  ascend_l10n: ^0.1.0
+  flutter_riverpod: ^3.4.2
+  go_router: ^17.4.0
+  fl_chart: ^1.2.0
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

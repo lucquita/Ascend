@@ -1,0 +1,129 @@
+{
+  "@@locale": "en",
+
+  "appName": "Ascend",
+  "appTagline": "Grow, consistently.",
+
+  "navToday": "Today",
+  "navGoals": "Goals",
+  "navCommunity": "Community",
+  "navProfile": "Profile",
+
+  "actionRetry": "Try again",
+  "actionCancel": "Cancel",
+  "actionSave": "Save",
+  "actionDelete": "Delete",
+  "actionContinue": "Continue",
+  "actionBack": "Back",
+  "actionClose": "Close",
+
+  "failureNetworkTitle": "You're offline",
+  "failureNetworkMessage": "We couldn't connect. Check your internet — your changes are saved and will sync on their own once you're back.",
+  "failureTimeoutTitle": "This is taking too long",
+  "failureTimeoutMessage": "Your connection is slow. Give it another try in a moment.",
+  "failureServerTitle": "Something broke on our end",
+  "failureServerMessage": "We already know about it and we're on it. Try again in a few minutes.",
+  "failurePermissionTitle": "You don't have access",
+  "failurePermissionMessage": "This action isn't available for your account.",
+  "failureNotFoundTitle": "We couldn't find it",
+  "failureNotFoundMessage": "It may have been deleted.",
+  "failureQuotaTitle": "You've hit today's limit",
+  "failureQuotaMessage": "You'll have new generations tomorrow. In the meantime you can build your plan by hand.",
+  "failureOfflineQueuedTitle": "Saved offline",
+  "failureOfflineQueuedMessage": "We'll upload it automatically once you're back online.",
+  "failureUnknownTitle": "Something went wrong",
+  "failureUnknownMessage": "We couldn't complete that. Please try again.",
+
+  "authInvalidCredentials": "That email and password don't match.",
+  "authEmailInUse": "That email already has an Ascend account.",
+  "authWeakPassword": "Pick a stronger password: 8 characters with letters and numbers.",
+  "authSessionExpired": "Your session expired. Please sign in again.",
+  "authAccountDisabled": "Your account is suspended. Write to us if you think this is a mistake.",
+  "authTooManyRequests": "Too many attempts in a row. Wait a few minutes.",
+
+  "validationEmailRequired": "Enter your email.",
+  "validationEmailInvalid": "That email doesn't look valid.",
+  "validationPasswordRequired": "Enter a password.",
+  "validationPasswordTooShort": "Use at least 8 characters.",
+  "validationPasswordTooWeak": "Mix letters and numbers.",
+  "validationPasswordMismatch": "The passwords don't match.",
+  "validationHandleRequired": "Pick a username.",
+  "validationHandleInvalid": "Use 3 to 20 characters: letters, numbers and underscore.",
+  "validationHandleTaken": "That username is already taken.",
+  "validationHandleReserved": "That username is reserved.",
+  "validationDisplayNameRequired": "Enter your name.",
+  "validationDisplayNameTooLong": "That name is too long.",
+  "validationBioTooLong": "The bio can't be longer than 160 characters.",
+  "validationTermsRequired": "We need you to accept the terms to create the account.",
+  "validationPasswordSameAsCurrent": "The new password has to be different from the current one.",
+  "authSocialUnavailable": "Signing in with Google or Apple isn't available yet. Use your email.",
+
+  "authSignInTitle": "Sign in",
+  "authSignInSubtitle": "Pick up where you left off. Your progress is waiting.",
+  "authSignInAction": "Sign in",
+  "authSignUpTitle": "Create your account",
+  "authSignUpSubtitle": "One minute now, and you start your first goal.",
+  "authSignUpAction": "Create account",
+  "authNoAccount": "Don't have an account yet?",
+  "authCreateOne": "Create one",
+  "authForgotPassword": "Forgot your password?",
+  "authRecoverTitle": "Recover password",
+  "authRecoverSubtitle": "Enter your email and we'll send you a link to pick a new one.",
+  "authRecoverAction": "Send link",
+  "authResetSentTitle": "Check your email",
+  "authVerifyTitle": "Verify your email",
+  "authVerifyResend": "Resend email",
+  "authVerifyDone": "I already verified it",
+  "authBlockedTitle": "Your account is suspended",
+  "authCompleteProfileTitle": "Almost there",
+  "authSignOut": "Sign out",
+  "authSignOutConfirm": "Sign out?",
+
+  "profileTitle": "Profile",
+  "profileEditTitle": "Edit profile",
+  "profileFieldName": "Your name",
+  "profileFieldHandle": "Username",
+  "profileFieldBio": "Bio",
+  "profileHandleLocked": "The username can't be changed for now.",
+  "profileSaved": "Profile updated",
+  "profileRoleAdmin": "Admin",
+
+  "offlineBanner": "You're offline. Your changes will sync on their own.",
+  "offlinePending": "{count, plural, one{1 pending} other{{count} pending}}",
+  "@offlinePending": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "emptyGoalsTitle": "No goals yet",
+  "emptyGoalsMessage": "Create your first one and we'll break it into concrete missions.",
+  "emptyGoalsAction": "Create goal",
+  "emptyMissionsTitle": "Nothing scheduled for today",
+  "emptyMissionsMessage": "Get ahead, or rest — we'll pick it up tomorrow.",
+  "emptyFeedTitle": "The feed is quiet",
+  "emptyFeedMessage": "Follow other people, or share your next win.",
+
+  "auraAmount": "{amount} Aura",
+  "@auraAmount": {
+    "placeholders": { "amount": { "type": "int" } }
+  },
+  "auraLevel": "Level {level} · {name}",
+  "@auraLevel": {
+    "placeholders": {
+      "level": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "streakDays": "{days, plural, one{1 day streak} other{{days} day streak}}",
+  "@streakDays": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "streakAtRisk": "Complete a mission to keep your streak alive",
+
+  "missionsCompletedOf": "{completed} of {total} missions",
+  "@missionsCompletedOf": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  }
+}

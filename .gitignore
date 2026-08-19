@@ -1,0 +1,68 @@
+# ── Dart / Flutter ────────────────────────────────────────────────────
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+
+# En un monorepo con pub workspaces solo existe un lock, en la raíz.
+# Los locks sueltos en los paquetes son basura de resoluciones viejas.
+packages/*/pubspec.lock
+apps/*/pubspec.lock
+
+# ── Android ───────────────────────────────────────────────────────────
+apps/*/android/.gradle/
+apps/*/android/local.properties
+apps/*/android/key.properties
+apps/*/android/app/upload-keystore.jks
+*.keystore
+*.jks
+
+# ── iOS ───────────────────────────────────────────────────────────────
+apps/*/ios/Pods/
+apps/*/ios/.symlinks/
+apps/*/ios/Flutter/Flutter.framework
+apps/*/ios/Flutter/Flutter.podspec
+apps/*/ios/Flutter/Generated.xcconfig
+apps/*/ios/Flutter/flutter_export_environment.sh
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# ── Node / Functions ──────────────────────────────────────────────────
+node_modules/
+backend/functions/lib/
+backend/functions/.env
+backend/tests/node_modules/
+
+# ── Firebase ──────────────────────────────────────────────────────────
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.firebaserc
+
+# SECRETOS — nunca al repositorio.
+# firebase_options.dart contiene identificadores de proyecto; se genera con
+# `flutterfire configure` en cada máquina y en CI.
+**/firebase_options*.dart
+**/google-services.json
+**/GoogleService-Info.plist
+*.env
+.env.*
+
+# ── Generados ─────────────────────────────────────────────────────────
+*.g.dart
+*.freezed.dart
+packages/ascend_l10n/lib/src/generated/
+packages/ascend_l10n/untranslated.json
+coverage/
+*.lcov
+
+# ── Editores y sistema ────────────────────────────────────────────────
+.idea/
+.vscode/
+!.vscode/launch.json
+!.vscode/settings.json
+.DS_Store
+Thumbs.db

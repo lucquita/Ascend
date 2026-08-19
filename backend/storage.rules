@@ -1,0 +1,67 @@
+rules_version = '2';
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ASCEND — Reglas de Firebase Storage
+// ═══════════════════════════════════════════════════════════════════════════
+//
+//  Punto clave: las evidencias son PRIVADAS. Solo las ve su dueño (y quien
+//  modera). Cuando alguien decide publicar un logro, una Cloud Function copia
+//  la imagen a /posts/. Nada privado se vuelve público por accidente.
+// ═══════════════════════════════════════════════════════════════════════════
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.role == 'admin';
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/(jpeg|png|webp|heic)');
+    }
+
+    function underSizeMb(mb) {
+      return request.resource.size < mb * 1024 * 1024;
+    }
+
+    // Denegar todo por defecto.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // Avatares: visibles para cualquier persona autenticada.
+    match /avatars/{uid}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(uid) && isImage() && underSizeMb(5);
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    // Evidencias: privadas. Solo el dueño y la moderación.
+    match /evidence/{uid}/{fileName} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if isOwner(uid) && isImage() && underSizeMb(10);
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    // Imágenes del feed: públicas entre usuarios autenticados.
+    match /posts/{uid}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(uid) && isImage() && underSizeMb(10);
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    // Recursos estáticos servidos por el equipo (ilustraciones, iconos).
+    match /public/{fileName} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

@@ -1,0 +1,23 @@
+name: ascend_workspace
+description: >
+  Ascend — Crecé constantemente. Plataforma de crecimiento personal.
+  Raíz del monorepo (pub workspace nativo de Dart 3.12).
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.12.0
+
+# Pub workspace nativo: un único pubspec.lock y un único .dart_tool
+# compartido por todos los miembros. Reemplaza a `melos bootstrap`.
+workspace:
+  - packages/ascend_core
+  - packages/ascend_domain
+  - packages/ascend_data
+  - packages/ascend_ui
+  - packages/ascend_l10n
+  - apps/ascend_mobile
+  - apps/ascend_admin
+
+dev_dependencies:
+  melos: ^7.1.0

@@ -1,0 +1,32 @@
+name: ascend_ui
+description: >
+  Design System de Ascend: tokens, temas claro/oscuro, componentes atómicos
+  y los organismos de estado (loading, error, empty, offline).
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+  flutter: ">=3.44.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  ascend_core: ^0.1.0
+  google_fonts: ^8.2.1
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  flutter_riverpod: ^3.4.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+# NOTA (deuda técnica registrada, Fase 9):
+# Hoy Poppins se resuelve con `google_fonts`, que la descarga en el primer arranque.
+# Antes del lanzamiento hay que empaquetar los .ttf como assets para no depender
+# de la red en el arranque en frío. Ver AscendTypography.fontFamily.

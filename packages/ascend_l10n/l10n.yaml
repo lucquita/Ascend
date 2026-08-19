@@ -1,0 +1,9 @@
+arb-dir: lib/src/arb
+template-arb-file: app_es.arb
+output-localization-file: ascend_localizations.dart
+output-class: AscendL10n
+output-dir: lib/src/generated
+nullable-getter: false
+# Falla el build si falta una traducción en algún idioma. Un texto sin traducir
+# que aparece en inglés dentro de la app en español es un bug visible.
+untranslated-messages-file: untranslated.json

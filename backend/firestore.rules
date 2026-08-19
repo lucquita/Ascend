@@ -1,0 +1,336 @@
+rules_version = '2';
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ASCEND — Reglas de seguridad de Cloud Firestore
+// ═══════════════════════════════════════════════════════════════════════════
+//
+//  Principios:
+//  1. Denegar todo por defecto; conceder por ruta y con el mínimo alcance.
+//  2. El rol se lee del CUSTOM CLAIM del token, nunca de un documento.
+//     Leerlo con get() costaría una lectura facturada por evaluación y, peor,
+//     si el usuario pudiera escribir su propio documento se auto-promovería.
+//  3. Los campos que otorgan valor —aura, stats, counters, moderation— son
+//     inescribibles desde el cliente. Solo los toca el Admin SDK, que se
+//     salta estas reglas por diseño.
+//  4. Ante la duda, el default es el más restrictivo.
+//
+//  Estas reglas son la ÚNICA frontera de seguridad real: la validación en la
+//  app es experiencia de usuario, no protección.
+// ═══════════════════════════════════════════════════════════════════════════
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ───────────────────────── Helpers ─────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Una cuenta suspendida puede leer sus datos pero no generar contenido.
+    function isActive() {
+      return isSignedIn() && request.auth.token.get('status', 'active') != 'suspended';
+    }
+
+    // Administrar exige rol Y cuenta activa. Sin `isActive()`, suspender a un
+    // administrador no le quitaba nada: seguía leyendo todos los datos,
+    // moderando y editando el catálogo hasta que su token caducara. La
+    // suspensión es justamente la herramienta para frenar a un administrador
+    // que hace daño, así que no puede depender de que la persona coopere.
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.role == 'admin' && isActive();
+    }
+
+    // Solo se modifican los campos indicados y ningún otro.
+    function onlyFields(allowed) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowed);
+    }
+
+    // El campo no cambia respecto del documento existente.
+    function unchanged(field) {
+      return !(field in request.resource.data.diff(resource.data).affectedKeys());
+    }
+
+    // El campo no viene en el documento que se está creando.
+    function absent(field) {
+      return !(field in request.resource.data);
+    }
+
+    // La revisión de una evidencia la escribe el servidor. El cliente puede
+    // omitir el campo o dejarlo en 'pending'; cualquier otro valor se rechaza.
+    function evidenceReviewNotSelfGranted() {
+      return !('evidence' in request.resource.data)
+        || request.resource.data.evidence == null
+        || !('reviewStatus' in request.resource.data.evidence)
+        || request.resource.data.evidence.reviewStatus == 'pending';
+    }
+
+    function isValidString(field, maxLength) {
+      return request.resource.data[field] is string
+        && request.resource.data[field].size() > 0
+        && request.resource.data[field].size() <= maxLength;
+    }
+
+    // ──────────────── Denegación total por defecto ────────────────
+    // Cualquier colección que se cree en el futuro nace cerrada.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ─────────────────────────── Usuarios ───────────────────────────
+
+    match /users/{uid} {
+      allow get: if isOwner(uid) || isAdmin();
+      allow list: if isAdmin();
+
+      // Al registrarse no se puede autoasignar rol, aura ni estadísticas.
+      allow create: if isOwner(uid)
+        && request.resource.data.uid == uid
+        && request.resource.data.role == 'user'
+        && request.resource.data.status == 'active'
+        && absent('aura')
+        && absent('stats')
+        && isValidString('displayName', 40)
+        && isValidString('handle', 20);
+
+      // La persona solo toca presentación y ajustes. Todo lo demás —rol,
+      // estado, aura, estadísticas— es territorio del servidor.
+      allow update: if isOwner(uid)
+        && onlyFields([
+             'displayName', 'bio', 'photoUrl', 'settings',
+             'locale', 'onboarding', 'interests', 'updatedAt'
+           ])
+        && unchanged('role')
+        && unchanged('status')
+        && unchanged('aura')
+        && unchanged('stats')
+        && unchanged('handle');
+
+      // La baja pasa por una Cloud Function que borra Auth, Storage y
+      // anonimiza el contenido público. Un delete directo dejaría basura.
+      allow delete: if false;
+
+      // ── Objetivos ──
+      match /goals/{goalId} {
+        allow read: if isOwner(uid) || isAdmin();
+
+        allow create: if isOwner(uid) && isActive()
+          && request.resource.data.ownerId == uid
+          && isValidString('title', 80)
+          && absent('progress')
+          && absent('auraEarned');
+
+        allow update: if isOwner(uid) && isActive()
+          && unchanged('ownerId')
+          && unchanged('progress')
+          && unchanged('auraEarned');
+
+        allow delete: if isOwner(uid);
+      }
+
+      // ── Misiones ──
+      match /missions/{missionId} {
+        allow read: if isOwner(uid) || isAdmin();
+
+        // La recompensa la fija el servidor según config/auraRules. Si el
+        // cliente pudiera proponerla, se otorgaría el Aura que quisiera.
+        allow create: if isOwner(uid) && isActive()
+          && request.resource.data.ownerId == uid
+          && isValidString('title', 80)
+          && absent('auraReward');
+
+        // El cliente puede adjuntar y reemplazar la evidencia, pero NO puede
+        // declararla aprobada: eso lo decide la moderación del servidor. Sin
+        // esta regla, cualquiera se autoaprobaría una evidencia falsa y el
+        // logro quedaría acreditado.
+        allow update: if isOwner(uid) && isActive()
+          && unchanged('ownerId')
+          && unchanged('auraReward')
+          && evidenceReviewNotSelfGranted();
+
+        allow delete: if isOwner(uid);
+      }
+
+      // ── Aura: estrictamente de solo lectura ──
+      match /auraLedger/{entryId} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow write: if false;
+      }
+
+      match /achievements/{achievementId} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow write: if false;
+      }
+
+      // ── Notificaciones: solo se puede marcar como leída ──
+      match /notifications/{notificationId} {
+        allow read: if isOwner(uid);
+        allow update: if isOwner(uid) && onlyFields(['read']);
+        allow create, delete: if false;
+      }
+
+      // ── Tokens de dispositivo ──
+      match /fcmTokens/{token} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // ── Cuota de IA: la lleva el servidor ──
+      match /aiUsage/{day} {
+        allow read: if isOwner(uid);
+        allow write: if false;
+      }
+
+      // ── Consumo diario del tope de Aura ──
+      // Se puede leer para mostrar "te queda X por hoy", pero escribirlo sería
+      // resetearse el tope y farmear sin límite.
+      match /auraUsage/{day} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow write: if false;
+      }
+
+      // ── Grafo social ──
+      match /following/{targetUid} {
+        allow read: if isSignedIn();
+        allow create, delete: if isOwner(uid) && isActive();
+        allow update: if false;
+      }
+
+      // Los seguidores los mantiene un trigger: si el cliente pudiera
+      // escribirlos, cualquiera se agregaría seguidores falsos.
+      match /followers/{followerUid} {
+        allow read: if isSignedIn();
+        allow write: if false;
+      }
+    }
+
+    // ──────────────── Perfiles públicos (proyección) ────────────────
+    // Existe para que el feed no tenga que leer /users, que contiene email,
+    // ajustes y estadísticas privadas.
+    match /publicProfiles/{uid} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // Reserva de handles: se escribe en transacción desde una Function.
+    match /handles/{handle} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // ─────────────────────────── Feed ───────────────────────────
+
+    match /posts/{postId} {
+      // El contenido oculto por moderación desaparece para todo el mundo
+      // menos para su autor y los administradores.
+      allow read: if isSignedIn() && (
+        resource.data.moderation.status == 'visible'
+        || resource.data.authorId == request.auth.uid
+        || isAdmin()
+      );
+
+      allow create: if isSignedIn() && isActive()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() <= 500
+        && absent('counters')
+        && absent('moderation')
+        && absent('author')
+        // La premisa del producto, aplicada en el servidor: un logro tiene
+        // que apuntar a algo real. Solo las reflexiones quedan exentas.
+        && (
+          request.resource.data.type == 'reflection'
+          || 'source' in request.resource.data
+        );
+
+      // El autor solo puede corregir el texto. Cambiar el logro asociado
+      // después de publicar sería reescribir la historia.
+      allow update: if (
+        resource.data.authorId == request.auth.uid
+        && onlyFields(['text', 'updatedAt'])
+      ) || isAdmin();
+
+      allow delete: if resource.data.authorId == request.auth.uid || isAdmin();
+
+      // ── Likes: el ID del documento ES el uid ──
+      // Idempotencia gratis: no existe forma de dar like dos veces.
+      match /likes/{likeUid} {
+        allow read: if isSignedIn();
+        allow create: if isOwner(likeUid) && isActive();
+        allow delete: if isOwner(likeUid);
+        allow update: if false;
+      }
+
+      // ── Comentarios ──
+      match /comments/{commentId} {
+        allow read: if isSignedIn();
+
+        allow create: if isSignedIn() && isActive()
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 300
+          && absent('counters')
+          && absent('moderation')
+          && absent('author');
+
+        allow update: if isAdmin();
+        allow delete: if resource.data.authorId == request.auth.uid || isAdmin();
+      }
+    }
+
+    // ───────────────────────── Moderación ─────────────────────────
+
+    match /reports/{reportId} {
+      // Se crea con ID determinístico {targetId}_{reporterId}: la misma
+      // persona no puede inflar el contador reportando cien veces.
+      allow create: if isSignedIn() && isActive()
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.status == 'open'
+        && reportId == request.resource.data.target.id + '_' + request.auth.uid;
+
+      // Quien reporta no puede ver la cola de moderación ni su resolución.
+      allow read, update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // ───────────────────────── Catálogos ─────────────────────────
+
+    match /categories/{categoryId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /missionTemplates/{templateId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /config/{configId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ─────────────── Solo servidor / solo administración ───────────────
+
+    match /aiJobs/{jobId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /adminStats/{statsId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // El log de auditoría es inmutable incluso para los administradores:
+    // un registro que quien audita puede borrar no sirve para auditar.
+    match /auditLog/{logId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+  }
+}

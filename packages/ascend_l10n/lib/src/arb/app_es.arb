@@ -1,0 +1,129 @@
+{
+  "@@locale": "es",
+
+  "appName": "Ascend",
+  "appTagline": "Crecé constantemente.",
+
+  "navToday": "Hoy",
+  "navGoals": "Objetivos",
+  "navCommunity": "Comunidad",
+  "navProfile": "Perfil",
+
+  "actionRetry": "Reintentar",
+  "actionCancel": "Cancelar",
+  "actionSave": "Guardar",
+  "actionDelete": "Eliminar",
+  "actionContinue": "Continuar",
+  "actionBack": "Volver",
+  "actionClose": "Cerrar",
+
+  "failureNetworkTitle": "Sin conexión",
+  "failureNetworkMessage": "No pudimos conectarnos. Revisá tu internet: tus cambios se guardan y se sincronizan solos cuando vuelvas.",
+  "failureTimeoutTitle": "Tardó demasiado",
+  "failureTimeoutMessage": "La conexión está lenta. Probá de nuevo en un momento.",
+  "failureServerTitle": "Algo falló de nuestro lado",
+  "failureServerMessage": "Ya estamos al tanto y lo estamos resolviendo. Probá de nuevo en unos minutos.",
+  "failurePermissionTitle": "No tenés acceso",
+  "failurePermissionMessage": "Esta acción no está disponible para tu cuenta.",
+  "failureNotFoundTitle": "No lo encontramos",
+  "failureNotFoundMessage": "Puede que se haya eliminado.",
+  "failureQuotaTitle": "Llegaste al límite por hoy",
+  "failureQuotaMessage": "Mañana volvés a tener generaciones disponibles. Mientras tanto podés crear tu plan a mano.",
+  "failureOfflineQueuedTitle": "Guardado sin conexión",
+  "failureOfflineQueuedMessage": "Lo subimos automáticamente cuando vuelva el internet.",
+  "failureUnknownTitle": "Algo salió mal",
+  "failureUnknownMessage": "No pudimos completar la acción. Probá de nuevo.",
+
+  "authInvalidCredentials": "El email o la contraseña no coinciden.",
+  "authEmailInUse": "Ese email ya tiene una cuenta en Ascend.",
+  "authWeakPassword": "Elegí una contraseña más segura: 8 caracteres con letras y números.",
+  "authSessionExpired": "Tu sesión caducó. Volvé a entrar.",
+  "authAccountDisabled": "Tu cuenta está suspendida. Escribinos si creés que es un error.",
+  "authTooManyRequests": "Demasiados intentos seguidos. Esperá unos minutos.",
+
+  "validationEmailRequired": "Escribí tu email.",
+  "validationEmailInvalid": "Ese email no parece válido.",
+  "validationPasswordRequired": "Escribí una contraseña.",
+  "validationPasswordTooShort": "Usá al menos 8 caracteres.",
+  "validationPasswordTooWeak": "Combiná letras y números.",
+  "validationPasswordMismatch": "Las contraseñas no coinciden.",
+  "validationHandleRequired": "Elegí un nombre de usuario.",
+  "validationHandleInvalid": "Usá entre 3 y 20 caracteres: letras, números y guion bajo.",
+  "validationHandleTaken": "Ese nombre de usuario ya está en uso.",
+  "validationHandleReserved": "Ese nombre de usuario está reservado.",
+  "validationDisplayNameRequired": "Escribí tu nombre.",
+  "validationDisplayNameTooLong": "Ese nombre es demasiado largo.",
+  "validationBioTooLong": "La biografía no puede pasar de 160 caracteres.",
+  "validationTermsRequired": "Necesitamos que aceptes los términos para crear la cuenta.",
+  "validationPasswordSameAsCurrent": "La contraseña nueva tiene que ser distinta de la actual.",
+  "authSocialUnavailable": "Entrar con Google o Apple todavía no está disponible. Usá tu email.",
+
+  "authSignInTitle": "Iniciar sesión",
+  "authSignInSubtitle": "Volvé a donde dejaste. Tu progreso te está esperando.",
+  "authSignInAction": "Entrar",
+  "authSignUpTitle": "Creá tu cuenta",
+  "authSignUpSubtitle": "Un minuto ahora, y arrancás con tu primer objetivo.",
+  "authSignUpAction": "Crear cuenta",
+  "authNoAccount": "¿Todavía no tenés cuenta?",
+  "authCreateOne": "Creá una",
+  "authForgotPassword": "¿Olvidaste tu contraseña?",
+  "authRecoverTitle": "Recuperar contraseña",
+  "authRecoverSubtitle": "Escribí tu email y te mandamos un enlace para elegir una nueva.",
+  "authRecoverAction": "Enviar enlace",
+  "authResetSentTitle": "Revisá tu correo",
+  "authVerifyTitle": "Verificá tu email",
+  "authVerifyResend": "Reenviar correo",
+  "authVerifyDone": "Ya lo verifiqué",
+  "authBlockedTitle": "Tu cuenta está suspendida",
+  "authCompleteProfileTitle": "Falta poco",
+  "authSignOut": "Cerrar sesión",
+  "authSignOutConfirm": "¿Cerrar sesión?",
+
+  "profileTitle": "Perfil",
+  "profileEditTitle": "Editar perfil",
+  "profileFieldName": "Tu nombre",
+  "profileFieldHandle": "Nombre de usuario",
+  "profileFieldBio": "Biografía",
+  "profileHandleLocked": "El nombre de usuario no se puede cambiar por ahora.",
+  "profileSaved": "Perfil actualizado",
+  "profileRoleAdmin": "Administrador",
+
+  "offlineBanner": "Sin conexión. Tus cambios se sincronizan solos.",
+  "offlinePending": "{count, plural, one{1 pendiente} other{{count} pendientes}}",
+  "@offlinePending": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "emptyGoalsTitle": "Todavía no tenés objetivos",
+  "emptyGoalsMessage": "Creá el primero y te armamos el plan con misiones concretas.",
+  "emptyGoalsAction": "Crear objetivo",
+  "emptyMissionsTitle": "No tenés misiones para hoy",
+  "emptyMissionsMessage": "Aprovechá para adelantar, o descansá: mañana seguimos.",
+  "emptyFeedTitle": "El feed está tranquilo",
+  "emptyFeedMessage": "Seguí a otras personas o compartí tu próximo logro.",
+
+  "auraAmount": "{amount} de Aura",
+  "@auraAmount": {
+    "placeholders": { "amount": { "type": "int" } }
+  },
+  "auraLevel": "Nivel {level} · {name}",
+  "@auraLevel": {
+    "placeholders": {
+      "level": { "type": "int" },
+      "name": { "type": "String" }
+    }
+  },
+  "streakDays": "{days, plural, one{1 día de racha} other{{days} días de racha}}",
+  "@streakDays": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "streakAtRisk": "Completá una misión para no perder tu racha",
+
+  "missionsCompletedOf": "{completed} de {total} misiones",
+  "@missionsCompletedOf": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  }
+}

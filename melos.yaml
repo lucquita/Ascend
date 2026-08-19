@@ -1,0 +1,49 @@
+# Melos se usa SOLO como orquestador de scripts.
+# La resolución de dependencias la maneja el pub workspace nativo (pubspec.yaml raíz).
+name: ascend
+
+command:
+  version:
+    linkToCommits: true
+    workspaceChangelog: true
+
+scripts:
+  analyze:
+    description: Análisis estático de todo el monorepo.
+    run: dart analyze --fatal-infos .
+
+  format:
+    description: Formatea todo el código (ancho por defecto de Dart).
+    run: dart format .
+
+  format:check:
+    description: Verifica el formato sin modificar (usado en CI).
+    run: dart format --set-exit-if-changed .
+
+  test:
+    description: Ejecuta los tests de todos los paquetes.
+    run: melos exec --dir-exists=test -- flutter test
+
+  test:unit:
+    description: Tests de los paquetes de Dart puro (rápidos).
+    run: melos exec --scope="ascend_core,ascend_domain" -- dart test
+
+  gen:
+    description: Ejecuta build_runner en los paquetes que usan codegen.
+    run: melos exec --depends-on=build_runner -- dart run build_runner build --delete-conflicting-outputs
+
+  gen:watch:
+    description: build_runner en modo watch.
+    run: melos exec --depends-on=build_runner -- dart run build_runner watch --delete-conflicting-outputs
+
+  l10n:
+    description: Regenera las traducciones.
+    run: melos exec --scope="ascend_l10n" -- flutter gen-l10n
+
+  clean:deep:
+    description: Limpia artefactos de build de todo el monorepo.
+    run: melos exec -- flutter clean
+
+  ci:
+    description: Pipeline completo local (lo mismo que corre en CI).
+    run: melos run format:check && melos run analyze && melos run test
